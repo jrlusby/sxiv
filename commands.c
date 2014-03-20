@@ -55,461 +55,461 @@ extern int prefix;
 extern bool extprefix;
 
 const int ss_delays[] = {
-	1, 2, 3, 5, 10, 15, 20, 30, 60, 120, 180, 300, 600
+    1, 2, 3, 5, 10, 15, 20, 30, 60, 120, 180, 300, 600
 };
 
 cmdreturn_t it_quit(arg_t a)
 {
-	unsigned int i;
+    unsigned int i;
 
-	if (options->to_stdout) {
-		for (i = 0; i < filecnt; i++) {
-			if (files[i].marked)
-				printf("%s\n", files[i].name);
-		}
-	}
-	cleanup();
-	exit(EXIT_SUCCESS);
+    if (options->to_stdout) {
+        for (i = 0; i < filecnt; i++) {
+            if (files[i].marked)
+                printf("%s\n", files[i].name);
+        }
+    }
+    cleanup();
+    exit(EXIT_SUCCESS);
 }
 
 cmdreturn_t it_switch_mode(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		if (tns.thumbs == NULL) {
-			tns_init(&tns, filecnt, &win);
-			tns.alpha = img.alpha;
-		}
-		img_close(&img, false);
-		reset_timeout(reset_cursor);
-		if (img.ss.on) {
-			img.ss.on = false;
-			reset_timeout(slideshow);
-		}
-		tns.sel = fileidx;
-		tns.dirty = true;
-		mode = MODE_THUMB;
-	} else {
-		load_image(tns.sel);
-		mode = MODE_IMAGE;
-	}
-	return CMD_DIRTY;
+    if (mode == MODE_IMAGE) {
+        if (tns.thumbs == NULL) {
+            tns_init(&tns, filecnt, &win);
+            tns.alpha = img.alpha;
+        }
+        img_close(&img, false);
+        reset_timeout(reset_cursor);
+        if (img.ss.on) {
+            img.ss.on = false;
+            reset_timeout(slideshow);
+        }
+        tns.sel = fileidx;
+        tns.dirty = true;
+        mode = MODE_THUMB;
+    } else {
+        load_image(tns.sel);
+        mode = MODE_IMAGE;
+    }
+    return CMD_DIRTY;
 }
 
 cmdreturn_t it_toggle_fullscreen(arg_t a)
 {
-	win_toggle_fullscreen(&win);
-	/* redraw after next ConfigureNotify event */
-	set_timeout(redraw, TO_REDRAW_RESIZE, false);
-	if (mode == MODE_IMAGE)
-		img.checkpan = img.dirty = true;
-	else
-		tns.dirty = true;
-	return CMD_OK;
+    win_toggle_fullscreen(&win);
+    /* redraw after next ConfigureNotify event */
+    set_timeout(redraw, TO_REDRAW_RESIZE, false);
+    if (mode == MODE_IMAGE)
+        img.checkpan = img.dirty = true;
+    else
+        tns.dirty = true;
+    return CMD_OK;
 }
 
 cmdreturn_t it_toggle_bar(arg_t a)
 {
-	win_toggle_bar(&win);
-	if (mode == MODE_IMAGE) {
-		img.checkpan = img.dirty = true;
-		if (win.bar.h > 0)
-			open_info();
-	} else {
-		tns.dirty = true;
-	}
-	return CMD_DIRTY;
+    win_toggle_bar(&win);
+    if (mode == MODE_IMAGE) {
+        img.checkpan = img.dirty = true;
+        if (win.bar.h > 0)
+            open_info();
+    } else {
+        tns.dirty = true;
+    }
+    return CMD_DIRTY;
 }
 
 cmdreturn_t it_prefix_external(arg_t a)
 {
-	extprefix = true;
-	return CMD_OK;
+    extprefix = true;
+    return CMD_OK;
 }
 
 cmdreturn_t t_reload_all(arg_t a)
 {
-	if (mode == MODE_THUMB) {
-		tns_free(&tns);
-		tns_init(&tns, filecnt, &win);
-		return CMD_DIRTY;
-	} else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_THUMB) {
+        tns_free(&tns);
+        tns_init(&tns, filecnt, &win);
+        return CMD_DIRTY;
+    } else {
+        return CMD_INVALID;
+    }
 }
 
 cmdreturn_t it_reload_image(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		load_image(fileidx);
-	} else {
-		win_set_cursor(&win, CURSOR_WATCH);
-		if (!tns_load(&tns, tns.sel, &files[tns.sel], true, false)) {
-			remove_file(tns.sel, false);
-			tns.dirty = true;
-			if (tns.sel >= tns.cnt)
-				tns.sel = tns.cnt - 1;
-		}
-	}
-	return CMD_DIRTY;
+    if (mode == MODE_IMAGE) {
+        load_image(fileidx);
+    } else {
+        win_set_cursor(&win, CURSOR_WATCH);
+        if (!tns_load(&tns, tns.sel, &files[tns.sel], true, false)) {
+            remove_file(tns.sel, false);
+            tns.dirty = true;
+            if (tns.sel >= tns.cnt)
+                tns.sel = tns.cnt - 1;
+        }
+    }
+    return CMD_DIRTY;
 }
 
 cmdreturn_t it_remove_image(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		remove_file(fileidx, true);
-		load_image(fileidx >= filecnt ? filecnt - 1 : fileidx);
-		return CMD_DIRTY;
-	} else if (tns.sel < tns.cnt) {
-		remove_file(tns.sel, true);
-		tns.dirty = true;
-		if (tns.sel >= tns.cnt)
-			tns.sel = tns.cnt - 1;
-		return CMD_DIRTY;
-	} else {
-		return CMD_OK;
-	}
+    if (mode == MODE_IMAGE) {
+        remove_file(fileidx, true);
+        load_image(fileidx >= filecnt ? filecnt - 1 : fileidx);
+        return CMD_DIRTY;
+    } else if (tns.sel < tns.cnt) {
+        remove_file(tns.sel, true);
+        tns.dirty = true;
+        if (tns.sel >= tns.cnt)
+            tns.sel = tns.cnt - 1;
+        return CMD_DIRTY;
+    } else {
+        return CMD_OK;
+    }
 }
 
 cmdreturn_t i_navigate(arg_t a)
 {
-	long n = (long) a;
+    long n = (long) a;
 
-	if (mode == MODE_IMAGE) {
-		if (prefix > 0)
-			n *= prefix;
-		n += fileidx;
-		if (n < 0)
-			n = 0;
-		if (n >= filecnt)
-			n = filecnt - 1;
+    if (mode == MODE_IMAGE) {
+        if (prefix > 0)
+            n *= prefix;
+        n += fileidx;
+        if (n < 0)
+            n = 0;
+        if (n >= filecnt)
+            n = filecnt - 1;
 
-		if (n != fileidx) {
-			load_image(n);
-			return CMD_DIRTY;
-		}
-	}
-	return CMD_INVALID;
+        if (n != fileidx) {
+            load_image(n);
+            return CMD_DIRTY;
+        }
+    }
+    return CMD_INVALID;
 }
 
 cmdreturn_t i_alternate(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		load_image(alternate);
-		return CMD_DIRTY;
-	} else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_IMAGE) {
+        load_image(alternate);
+        return CMD_DIRTY;
+    } else {
+        return CMD_INVALID;
+    }
 }
 
 cmdreturn_t it_first(arg_t a)
 {
-	if (mode == MODE_IMAGE && fileidx != 0) {
-		load_image(0);
-		return CMD_DIRTY;
-	} else if (mode == MODE_THUMB && tns.sel != 0) {
-		tns.sel = 0;
-		tns.dirty = true;
-		return CMD_DIRTY;
-	} else {
-		return CMD_OK;
-	}
+    if (mode == MODE_IMAGE && fileidx != 0) {
+        load_image(0);
+        return CMD_DIRTY;
+    } else if (mode == MODE_THUMB && tns.sel != 0) {
+        tns.sel = 0;
+        tns.dirty = true;
+        return CMD_DIRTY;
+    } else {
+        return CMD_OK;
+    }
 }
 
 cmdreturn_t it_n_or_last(arg_t a)
 {
-	int n = prefix != 0 && prefix - 1 < filecnt ? prefix - 1 : filecnt - 1;
+    int n = prefix != 0 && prefix - 1 < filecnt ? prefix - 1 : filecnt - 1;
 
-	if (mode == MODE_IMAGE && fileidx != n) {
-		load_image(n);
-		return CMD_DIRTY;
-	} else if (mode == MODE_THUMB && tns.sel != n) {
-		tns.sel = n;
-		tns.dirty = true;
-		return CMD_DIRTY;
-	} else {
-		return CMD_OK;
-	}
+    if (mode == MODE_IMAGE && fileidx != n) {
+        load_image(n);
+        return CMD_DIRTY;
+    } else if (mode == MODE_THUMB && tns.sel != n) {
+        tns.sel = n;
+        tns.dirty = true;
+        return CMD_DIRTY;
+    } else {
+        return CMD_OK;
+    }
 }
 
 cmdreturn_t i_navigate_frame(arg_t a)
 {
-	if (mode != MODE_IMAGE)
-		return CMD_INVALID;
-	else
-		return !img.multi.animate && img_frame_navigate(&img, (long) a);
+    if (mode != MODE_IMAGE)
+        return CMD_INVALID;
+    else
+        return !img.multi.animate && img_frame_navigate(&img, (long) a);
 }
 
 cmdreturn_t i_toggle_animation(arg_t a)
 {
-	if (mode != MODE_IMAGE)
-		return CMD_INVALID;
+    if (mode != MODE_IMAGE)
+        return CMD_INVALID;
 
-	if (img.multi.animate) {
-		reset_timeout(animate);
-		img.multi.animate = false;
-	} else if (img_frame_animate(&img, true)) {
-		set_timeout(animate, img.multi.frames[img.multi.sel].delay, true);
-	}
-	return CMD_DIRTY;
+    if (img.multi.animate) {
+        reset_timeout(animate);
+        img.multi.animate = false;
+    } else if (img_frame_animate(&img, true)) {
+        set_timeout(animate, img.multi.frames[img.multi.sel].delay, true);
+    }
+    return CMD_DIRTY;
 }
 
 cmdreturn_t it_toggle_image_mark(arg_t a)
 {
-	int sel = mode == MODE_IMAGE ? fileidx : tns.sel;
+    int sel = mode == MODE_IMAGE ? fileidx : tns.sel;
 
-	files[sel].marked = !files[sel].marked;
-	if (mode == MODE_THUMB)
-		tns_mark(&tns, sel, files[sel].marked);
-	return CMD_DIRTY;
+    files[sel].marked = !files[sel].marked;
+    if (mode == MODE_THUMB)
+        tns_mark(&tns, sel, files[sel].marked);
+    return CMD_DIRTY;
 }
 
 cmdreturn_t it_reverse_marks(arg_t a)
 {
-	int i, cnt = mode == MODE_IMAGE ? filecnt : tns.cnt;
+    int i, cnt = mode == MODE_IMAGE ? filecnt : tns.cnt;
 
-	for (i = 0; i < cnt; i++)
-		files[i].marked = !files[i].marked;
-	if (mode == MODE_THUMB)
-		tns.dirty = true;
-	return CMD_DIRTY;
+    for (i = 0; i < cnt; i++)
+        files[i].marked = !files[i].marked;
+    if (mode == MODE_THUMB)
+        tns.dirty = true;
+    return CMD_DIRTY;
 }
 
 cmdreturn_t it_navigate_marked(arg_t a)
 {
-	long n = (long) a;
-	int d, i, cnt, sel, new;
-	
-	if (mode == MODE_IMAGE)
-		cnt = filecnt, sel = new = fileidx;
-	else
-		cnt = tns.cnt, sel = new = tns.sel;
-	if (prefix > 0)
-		n *= prefix;
-	d = n > 0 ? 1 : -1;
-	for (i = sel + d; n != 0 && i >= 0 && i < cnt; i += d) {
-		if (files[i].marked) {
-			n -= d;
-			new = i;
-		}
-	}
-	if (new != sel) {
-		if (mode == MODE_IMAGE) {
-			load_image(new);
-		} else {
-			tns.sel = new;
-			tns.dirty = true;
-		}
-		return CMD_DIRTY;
-	} else {
-		return CMD_OK;
-	}
+    long n = (long) a;
+    int d, i, cnt, sel, new;
+    
+    if (mode == MODE_IMAGE)
+        cnt = filecnt, sel = new = fileidx;
+    else
+        cnt = tns.cnt, sel = new = tns.sel;
+    if (prefix > 0)
+        n *= prefix;
+    d = n > 0 ? 1 : -1;
+    for (i = sel + d; n != 0 && i >= 0 && i < cnt; i += d) {
+        if (files[i].marked) {
+            n -= d;
+            new = i;
+        }
+    }
+    if (new != sel) {
+        if (mode == MODE_IMAGE) {
+            load_image(new);
+        } else {
+            tns.sel = new;
+            tns.dirty = true;
+        }
+        return CMD_DIRTY;
+    } else {
+        return CMD_OK;
+    }
 }
 
 cmdreturn_t it_scroll_move(arg_t a)
 {
-	direction_t dir = (direction_t) a;
+    direction_t dir = (direction_t) a;
 
-	if (mode == MODE_IMAGE)
-		return img_pan(&img, dir, prefix);
-	else
-		return tns_move_selection(&tns, dir, prefix);
+    if (mode == MODE_IMAGE)
+        return img_pan(&img, dir, prefix);
+    else
+        return tns_move_selection(&tns, dir, prefix);
 }
 
 cmdreturn_t it_scroll_screen(arg_t a)
 {
-	direction_t dir = (direction_t) a;
+    direction_t dir = (direction_t) a;
 
-	if (mode == MODE_IMAGE)
-		return img_pan(&img, dir, -1);
-	else
-		return tns_scroll(&tns, dir, true);
+    if (mode == MODE_IMAGE)
+        return img_pan(&img, dir, -1);
+    else
+        return tns_scroll(&tns, dir, true);
 }
 
 cmdreturn_t i_scroll_to_edge(arg_t a)
 {
-	direction_t dir = (direction_t) a;
+    direction_t dir = (direction_t) a;
 
-	if (mode == MODE_IMAGE)
-		return img_pan_edge(&img, dir);
-	else
-		return CMD_INVALID;
+    if (mode == MODE_IMAGE)
+        return img_pan_edge(&img, dir);
+    else
+        return CMD_INVALID;
 }
 
 /* Xlib helper function for i_drag() */
 Bool is_motionnotify(Display *d, XEvent *e, XPointer a)
 {
-	return e != NULL && e->type == MotionNotify;
+    return e != NULL && e->type == MotionNotify;
 }
 
 #define WARP(x,y) \
-	XWarpPointer(win.env.dpy, None, win.xwin, 0, 0, 0, 0, x, y); \
-	ox = x, oy = y; \
-	break
+    XWarpPointer(win.env.dpy, None, win.xwin, 0, 0, 0, 0, x, y); \
+    ox = x, oy = y; \
+    break
 
 cmdreturn_t i_drag(arg_t a)
 {
-	int dx = 0, dy = 0, i, ox, oy, x, y;
-	unsigned int ui;
-	bool dragging = true, next = false;
-	XEvent e;
-	Window w;
+    int dx = 0, dy = 0, i, ox, oy, x, y;
+    unsigned int ui;
+    bool dragging = true, next = false;
+    XEvent e;
+    Window w;
 
-	if (mode != MODE_IMAGE)
-		return CMD_INVALID;
-	if (!XQueryPointer(win.env.dpy, win.xwin, &w, &w, &i, &i, &ox, &oy, &ui))
-		return CMD_OK;
-	
-	win_set_cursor(&win, CURSOR_HAND);
+    if (mode != MODE_IMAGE)
+        return CMD_INVALID;
+    if (!XQueryPointer(win.env.dpy, win.xwin, &w, &w, &i, &i, &ox, &oy, &ui))
+        return CMD_OK;
+    
+    win_set_cursor(&win, CURSOR_HAND);
 
-	while (dragging) {
-		if (!next)
-			XMaskEvent(win.env.dpy,
-			           ButtonPressMask | ButtonReleaseMask | PointerMotionMask, &e);
-		switch (e.type) {
-			case ButtonPress:
-			case ButtonRelease:
-				dragging = false;
-				break;
-			case MotionNotify:
-				x = e.xmotion.x;
-				y = e.xmotion.y;
+    while (dragging) {
+        if (!next)
+            XMaskEvent(win.env.dpy,
+                       ButtonPressMask | ButtonReleaseMask | PointerMotionMask, &e);
+        switch (e.type) {
+            case ButtonPress:
+            case ButtonRelease:
+                dragging = false;
+                break;
+            case MotionNotify:
+                x = e.xmotion.x;
+                y = e.xmotion.y;
 
-				/* wrap the mouse around */
-				if (x <= 0) {
-					WARP(win.w - 2, y);
-				} else if (x >= win.w - 1) {
-					WARP(1, y);
-				} else if (y <= 0) {
-					WARP(x, win.h - 2);
-				} else if (y >= win.h - 1) {
-					WARP(x, 1);
-				}
-				dx += x - ox;
-				dy += y - oy;
-				ox = x;
-				oy = y;
-				break;
-		}
-		if (dragging)
-			next = XCheckIfEvent(win.env.dpy, &e, is_motionnotify, None);
-		if ((!dragging || !next) && (dx != 0 || dy != 0)) {
-			if (img_move(&img, dx, dy)) {
-				img_render(&img);
-				win_draw(&win);
-			}
-			dx = dy = 0;
-		}
-	}
-	
-	win_set_cursor(&win, CURSOR_ARROW);
-	set_timeout(reset_cursor, TO_CURSOR_HIDE, true);
-	reset_timeout(redraw);
+                /* wrap the mouse around */
+                if (x <= 0) {
+                    WARP(win.w - 2, y);
+                } else if (x >= win.w - 1) {
+                    WARP(1, y);
+                } else if (y <= 0) {
+                    WARP(x, win.h - 2);
+                } else if (y >= win.h - 1) {
+                    WARP(x, 1);
+                }
+                dx += x - ox;
+                dy += y - oy;
+                ox = x;
+                oy = y;
+                break;
+        }
+        if (dragging)
+            next = XCheckIfEvent(win.env.dpy, &e, is_motionnotify, None);
+        if ((!dragging || !next) && (dx != 0 || dy != 0)) {
+            if (img_move(&img, dx, dy)) {
+                img_render(&img);
+                win_draw(&win);
+            }
+            dx = dy = 0;
+        }
+    }
+    
+    win_set_cursor(&win, CURSOR_ARROW);
+    set_timeout(reset_cursor, TO_CURSOR_HIDE, true);
+    reset_timeout(redraw);
 
-	return CMD_OK;
+    return CMD_OK;
 }
 
 cmdreturn_t i_zoom(arg_t a)
 {
-	long scale = (long) a;
+    long scale = (long) a;
 
-	if (mode != MODE_IMAGE)
-		return CMD_INVALID;
+    if (mode != MODE_IMAGE)
+        return CMD_INVALID;
 
-	if (scale > 0)
-		return img_zoom_in(&img);
-	else if (scale < 0)
-		return img_zoom_out(&img);
-	else
-		return CMD_OK;
+    if (scale > 0)
+        return img_zoom_in(&img);
+    else if (scale < 0)
+        return img_zoom_out(&img);
+    else
+        return CMD_OK;
 }
 
 cmdreturn_t i_set_zoom(arg_t a)
 {
-	if (mode == MODE_IMAGE)
-		return img_zoom(&img, (prefix ? prefix : (long) a) / 100.0);
-	else
-		return CMD_INVALID;
+    if (mode == MODE_IMAGE)
+        return img_zoom(&img, (prefix ? prefix : (long) a) / 100.0);
+    else
+        return CMD_INVALID;
 }
 
 cmdreturn_t i_fit_to_win(arg_t a)
 {
-	scalemode_t sm = (scalemode_t) a;
+    scalemode_t sm = (scalemode_t) a;
 
-	if (mode == MODE_IMAGE)
-		return img_fit_win(&img, sm);
-	else
-		return CMD_INVALID;
+    if (mode == MODE_IMAGE)
+        return img_fit_win(&img, sm);
+    else
+        return CMD_INVALID;
 }
 
 cmdreturn_t i_rotate(arg_t a)
 {
-	degree_t degree = (degree_t) a;
+    degree_t degree = (degree_t) a;
 
-	if (mode == MODE_IMAGE) {
-		img_rotate(&img, degree);
-		return CMD_DIRTY;
-	}	else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_IMAGE) {
+        img_rotate(&img, degree);
+        return CMD_DIRTY;
+    }   else {
+        return CMD_INVALID;
+    }
 }
 
 cmdreturn_t i_flip(arg_t a)
 {
-	flipdir_t dir = (flipdir_t) a;
+    flipdir_t dir = (flipdir_t) a;
 
-	if (mode == MODE_IMAGE) {
-		img_flip(&img, dir);
-		return CMD_DIRTY;
-	} else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_IMAGE) {
+        img_flip(&img, dir);
+        return CMD_DIRTY;
+    } else {
+        return CMD_INVALID;
+    }
 }
 
 cmdreturn_t i_slideshow(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		if (prefix > 0) {
-			img.ss.on = true;
-			img.ss.delay = prefix;
-			set_timeout(slideshow, img.ss.delay * 1000, true);
-		} else if (img.ss.on) {
-			img.ss.on = false;
-			reset_timeout(slideshow);
-		} else {
-			img.ss.on = true;
-		}
-		return CMD_DIRTY;
-	} else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_IMAGE) {
+        if (prefix > 0) {
+            img.ss.on = true;
+            img.ss.delay = prefix;
+            set_timeout(slideshow, img.ss.delay * 1000, true);
+        } else if (img.ss.on) {
+            img.ss.on = false;
+            reset_timeout(slideshow);
+        } else {
+            img.ss.on = true;
+        }
+        return CMD_DIRTY;
+    } else {
+        return CMD_INVALID;
+    }
 }
 
 cmdreturn_t i_toggle_antialias(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		img_toggle_antialias(&img);
-		return CMD_DIRTY;
-	} else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_IMAGE) {
+        img_toggle_antialias(&img);
+        return CMD_DIRTY;
+    } else {
+        return CMD_INVALID;
+    }
 }
 
 cmdreturn_t it_toggle_alpha(arg_t a)
 {
-	img.alpha = tns.alpha = !img.alpha;
-	if (mode == MODE_IMAGE)
-		img.dirty = true;
-	else
-		tns.dirty = true;
-	return CMD_DIRTY;
+    img.alpha = tns.alpha = !img.alpha;
+    if (mode == MODE_IMAGE)
+        img.dirty = true;
+    else
+        tns.dirty = true;
+    return CMD_DIRTY;
 }
 
 cmdreturn_t i_change_gamma(arg_t a)
 {
-	if (mode == MODE_IMAGE) {
-		return img_change_gamma(&img, (long) a);
-	} else {
-		return CMD_INVALID;
-	}
+    if (mode == MODE_IMAGE) {
+        return img_change_gamma(&img, (long) a);
+    } else {
+        return CMD_INVALID;
+    }
 }
 
