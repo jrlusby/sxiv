@@ -25,47 +25,47 @@
 #include "window.h"
 
 typedef struct {
-	Imlib_Image im;
-	unsigned int delay;
+    Imlib_Image im;
+    unsigned int delay;
 } img_frame_t;
 
 typedef struct {
-	img_frame_t *frames;
-	int cap;
-	int cnt;
-	int sel;
-	bool animate;
-	int length;
-	int repeat;
+    img_frame_t *frames;
+    int cap;
+    int cnt;
+    int sel;
+    bool animate;
+    int length;
+    int repeat;
 } multi_img_t;
 
 typedef struct {
-	Imlib_Image im;
-	int w;
-	int h;
+    Imlib_Image im;
+    int w;
+    int h;
 
-	win_t *win;
-	float x;
-	float y;
+    win_t *win;
+    float x;
+    float y;
 
-	scalemode_t scalemode;
-	float zoom;
+    scalemode_t scalemode;
+    float zoom;
 
-	bool re;
-	bool checkpan;
-	bool dirty;
-	bool aa;
-	bool alpha;
+    bool re;
+    bool checkpan;
+    bool dirty;
+    bool aa;
+    bool alpha;
 
-	Imlib_Color_Modifier cmod;
-	int gamma;
+    Imlib_Color_Modifier cmod;
+    int gamma;
 
-	struct {
-		bool on;
-		int delay;
-	} ss;
+    struct {
+        bool on;
+        int delay;
+    } ss;
 
-	multi_img_t multi;
+    multi_img_t multi;
 } img_t;
 
 void img_init(img_t*, win_t*);

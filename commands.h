@@ -24,26 +24,26 @@
 #include "types.h"
 
 typedef enum {
-	CMD_INVALID = -1,
-	CMD_OK      =  0,
-	CMD_DIRTY   =  1
+    CMD_INVALID = -1,
+    CMD_OK      =  0,
+    CMD_DIRTY   =  1
 } cmdreturn_t;
 
 typedef void* arg_t;
 typedef cmdreturn_t (*command_f)(arg_t);
 
 typedef struct {
-	unsigned int mask;
-	KeySym ksym;
-	command_f cmd;
-	arg_t arg;
+    unsigned int mask;
+    KeySym ksym;
+    command_f cmd;
+    arg_t arg;
 } keymap_t;
 
 typedef struct {
-	unsigned int mask;
-	unsigned int button;
-	command_f cmd;
-	arg_t arg;
+    unsigned int mask;
+    unsigned int button;
+    command_f cmd;
+    arg_t arg;
 } button_t;
 
 cmdreturn_t it_quit(arg_t);

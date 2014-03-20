@@ -52,13 +52,13 @@
 }
 
 typedef struct {
-	DIR *dir;
-	char *name;
-	int d;
+    DIR *dir;
+    char *name;
+    int d;
 
-	char **stack;
-	int stcap;
-	int stlen;
+    char **stack;
+    int stcap;
+    int stlen;
 } r_dir_t;
 
 void* s_malloc(size_t);

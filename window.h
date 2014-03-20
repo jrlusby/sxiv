@@ -25,55 +25,55 @@
 #include "types.h"
 
 enum {
-	BAR_L_LEN = 512,
-	BAR_R_LEN = 64
+    BAR_L_LEN = 512,
+    BAR_R_LEN = 64
 };
 
 enum {
-	ATOM_WM_DELETE_WINDOW,
-	ATOM__NET_WM_NAME,
-	ATOM__NET_WM_ICON_NAME,
-	ATOM__NET_WM_ICON,
-	ATOM__NET_WM_STATE,
-	ATOM__NET_WM_STATE_FULLSCREEN,
-	ATOM__NET_SUPPORTED,
-	ATOM_COUNT
+    ATOM_WM_DELETE_WINDOW,
+    ATOM__NET_WM_NAME,
+    ATOM__NET_WM_ICON_NAME,
+    ATOM__NET_WM_ICON,
+    ATOM__NET_WM_STATE,
+    ATOM__NET_WM_STATE_FULLSCREEN,
+    ATOM__NET_SUPPORTED,
+    ATOM_COUNT
 };
 
 typedef struct {
-	Display *dpy;
-	int scr;
-	int scrw, scrh;
-	Visual *vis;
-	Colormap cmap;
-	int depth;
+    Display *dpy;
+    int scr;
+    int scrw, scrh;
+    Visual *vis;
+    Colormap cmap;
+    int depth;
 } win_env_t;
 
 typedef struct {
-	Window xwin;
-	win_env_t env;
+    Window xwin;
+    win_env_t env;
 
-	unsigned long white;
-	unsigned long bgcol;
-	unsigned long fscol;
-	unsigned long selcol;
-	Pixmap pm;
+    unsigned long white;
+    unsigned long bgcol;
+    unsigned long fscol;
+    unsigned long selcol;
+    Pixmap pm;
 
-	int x;
-	int y;
-	unsigned int w;
-	unsigned int h; /* = win height - bar height */
-	unsigned int bw;
+    int x;
+    int y;
+    unsigned int w;
+    unsigned int h; /* = win height - bar height */
+    unsigned int bw;
 
-	bool fullscreen;
+    bool fullscreen;
 
-	struct {
-		unsigned int h;
-		char l[BAR_L_LEN];
-		char r[BAR_R_LEN];
-		unsigned long bgcol;
-		unsigned long fgcol;
-	} bar;
+    struct {
+        unsigned int h;
+        char l[BAR_L_LEN];
+        char r[BAR_R_LEN];
+        unsigned long bgcol;
+        unsigned long fgcol;
+    } bar;
 } win_t;
 
 extern Atom atoms[ATOM_COUNT];

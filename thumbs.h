@@ -26,29 +26,29 @@
 #include "window.h"
 
 typedef struct {
-	const fileinfo_t *file;
-	Imlib_Image im;
-	int w;
-	int h;
-	int x;
-	int y;
+    const fileinfo_t *file;
+    Imlib_Image im;
+    int w;
+    int h;
+    int x;
+    int y;
 } thumb_t;
 
 typedef struct {
-	thumb_t *thumbs;
-	int cap;
-	int cnt;
-	int first;
-	int sel;
+    thumb_t *thumbs;
+    int cap;
+    int cnt;
+    int first;
+    int sel;
 
-	win_t *win;
-	int x;
-	int y;
-	int cols;
-	int rows;
+    win_t *win;
+    int x;
+    int y;
+    int cols;
+    int rows;
 
-	bool alpha;
-	bool dirty;
+    bool alpha;
+    bool dirty;
 } tns_t;
 
 void tns_clean_cache(tns_t*);

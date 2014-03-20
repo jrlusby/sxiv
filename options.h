@@ -23,30 +23,30 @@
 #include "image.h"
 
 typedef struct {
-	/* file list: */
-	char **filenames;
-	bool from_stdin;
-	bool to_stdout;
-	bool recursive;
-	int filecnt;
-	int startnum;
+    /* file list: */
+    char **filenames;
+    bool from_stdin;
+    bool to_stdout;
+    bool recursive;
+    int filecnt;
+    int startnum;
 
-	/* image: */
-	scalemode_t scalemode;
-	float zoom;
-	int gamma;
-	int slideshow;
+    /* image: */
+    scalemode_t scalemode;
+    float zoom;
+    int gamma;
+    int slideshow;
 
-	/* window: */
-	bool fullscreen;
-	bool hide_bar;
-	char *geometry;
-	char *res_name;
+    /* window: */
+    bool fullscreen;
+    bool hide_bar;
+    char *geometry;
+    char *res_name;
 
-	/* misc flags: */
-	bool quiet;
-	bool thumb_mode;
-	bool clean_cache;
+    /* misc flags: */
+    bool quiet;
+    bool thumb_mode;
+    bool clean_cache;
 } options_t;
 
 extern const options_t *options;
